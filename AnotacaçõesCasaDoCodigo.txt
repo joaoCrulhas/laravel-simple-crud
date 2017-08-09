@@ -1,0 +1,334 @@
+
+Tutorial para C9/Laravel https://community.c9.io/t/getting-started-with-laravel/1608
+
+Estrutura de pastas:
+    a) app: models,views e controllers ficam nesta pasta. A
+    grosso modo é onde seu código vai ficar. 
+    
+    b) config: Arquivos de configuração.
+    
+    c) public: Pasta para onde seu webserver vai apontar.
+    css/imagens/js é normal ficar nesta pasta. 
+    
+    d) vendor: onde fica o source code do Laravel, plugins
+    e outras dependências. Tudo que utilizarmos de terceiros
+    ficará nesta pasta.
+    
+O Laravel segue uma estrutura MVC :
+    a) Model: Camada onde ficam as regras de negócio, 
+    entidades e classes de acesso ao banco de dados.
+    
+    b) View: Responsável por apresentar as páginas e os
+    outros tipos de resultados para os usuários. Geralmente
+    é a resposta que o framework irá enviar para o 
+    navegador(HTML). 
+    
+    c) Controller: Recebe as requisições da WEBe decide
+    como gerenciá-las. Nesta parte definimos qual modelo
+    deve ser executado, para determinada ação e qual view
+    receberá a resposta. 
+    
+Quando o cliente envia uma requisição pelo navegador, 
+primeiramente o arquivo routes.php receberá essa 
+requisição. Este arquivo receberá as requisições e irá
+envia-las para os controllers. Os controladores irão pegar
+essas requisições, e vão chamar as models de nossa 
+aplicação. As models recuperam, se necessário, informações
+do nosso banco de dados, e retorna para as controllers, que
+por meio das views, exibe essas informações para 
+os usuários.
+
+Para se conectar o banco de dados, com o laravel, primeiros
+temos que fazer o arquivo ".env" aparcer, e para isto,
+basta criarmos um novo arquivo ".env" que ele irá
+aparecer.
+Ao aparecer, alterarmos para onde queremos que ele 
+aponte, no nosso caso ficou da seguinte maneira:
+    DB_CONNECTION=mysql
+    DB_HOST=127.0.0.1
+    DB_PORT=3306
+    DB_DATABASE=estoque_laravel
+    DB_USERNAME=root
+    DB_PASSWORD=
+
+As informações, sendo assim podemos acessar o nosso
+banco de dados normalmente.
+
+- Para gerarmos os modelos, podemos utilizar o comando
+php artisan make:model Produto; Criando toda a estrutura
+da classe, com otods os imports e tudo mais. Passando 
+o nome da classe, o model já será criado com todo o código
+padrão.
+Tabela produto será represetanda pela tabela Produto;
+
+4.2) Trabalhando com migrations:
+
+Quando gerarmos o model de uma classe, utilizamos o 
+comando "php artisan make:model Produto -m";
+Após criar a model e a migration, acessamos os arquivos 
+de migração, "database/migrations", após isso, acessamos
+o arquivo de migração e verificamos que é definido um 
+arquivo padrão. 
+Depois disso no método up() do nosso migration,
+configurar a table, com as colunas, tipos, para que 
+seja mais fácil, acessar a documentação do Laravel.
+
+Após definirmos a estrutura do migration, com as colunas
+que terá na nossa tabela. 
+basta executarmos o comando
+"php artisan migrate";
+
+Temos o método, nas migrations, para criação
+de tabelas e para realizarmos o rollback 
+(php artisan migrate:rollback) que pode ser
+executado pelo comando acima.
+
+4.5) Inserindo Dados na Tabela Produtos:
+
+
+Uma maneira de inserir dados em uma tablea, é utilizando
+o recurso Seed do Laravel.
+Seeder é uma classe que popula o banco de dados.
+Esta classe é encontrada em "database/seeds"
+Há um arquivo chamada DatabaseSeeder, que irá nos 
+ajudar a popular nosso DB.
+para executar o seed, basta rodarmos o comando
+"php artisan db:seed" 
+
+
+CAPÍTULO 05)
+    O Controller não deve renderizar html nenhum, pois
+    não faz sentido, para isso utilizamos a View.
+    Para isso podemos criar arquivos no diretório
+    "/resources/views/" com o HTML/lógica que queremos
+    renderizar, é um arquivo PHP, e assim como um 
+    arquivo PHP, podemos renderizar a página;
+    
+    - O arquivo de logs, que guarda as informações, 
+    quando alguma operação deu erro, é no arquivo
+    raiz/storage/laravel.log que se encontra os logs, 
+    com maiores informações sobre o erro;
+    
+    - No exemplo deste livro, queremos renderizar o html,
+    porém a variável produtos não foi definida, para que 
+    ao renderizar o HTML, se quisermos passar alguma
+    estrutura, podemos passar
+    "return view('listagem')->with('produtos',$produtos)"
+    
+    Desta maneira a view irá receber a variável produtos
+    e conseguirá renderizar as informações que estão 
+    vindo do DB. Se for um arquivo html, estáticos
+    sem variável nenhuma, basta passar
+    "return view('listagem');" 
+    que irá funcionar corretamente, pois não tem nenhuma 
+    variável para renderizar;
+    
+    antes de renderizar podemos verificar se a view
+    que será chamada, realmente existe. 
+    
+    if(view()->exists('listagem')){
+        return view('listagem');
+    }
+
+Capítulo 06) Parâmetros da request e URL:
+    - quando vamos fazer um select em nosso controller
+    para mandar renderizar algo na view, se o retorno
+    for apenas um objeto, na view iremos fazer um 
+    tratamento no HTML para trabalhar como uma view,
+    e passar como objeto, e não um array, ao 
+    dar o return na view.
+
+"return view('detalhes')->with('p',$resposta[0]);"
+Este return acima é feito no controller, renderizando
+o detalhes, a variável "p"-> Que será chamada na view.
+Outro ponto é, conforme dito, irá trabalhar com o html, 
+pois neste html "detalhes.php" estamos renderizando 
+apenas um objeto e não um array.
+
+6.2) Enviando parâmetros na request:
+    Para que enviamos alguma parâmetro via URL,
+    podemos utilizar a variável que estamos trabalhando
+"<td><a href = "/produtos/mostra?id="<?= $p->id ?>> Visualizar </a></td>"
+Verificamos que passamos o parâmetro "id=" sendo assim
+a URL vai ter um parâmetro ID e este valor, estou 
+retirando da variável $p->id, que foi consturída no
+nosso migrate
+
+6.3) Recuperando Parâmetro:
+    - Quando um valor é enviado via URL, vamos poder 
+    recuperá-lo seu respectivo valor em nosso controller,
+    com a interface "Request", iremos trabalhar com o 
+    'facade'.
+    A interface Request nos irá auxiliar com este trabalho
+    por exemplo se quisermos recuperar o ID passado
+    basta usar 
+    $var = Request::input('id'); id= Nome do Parâmetro
+    que está sendo passado na URL;
+    
+    Podemos passar um valor default, caso for interessante
+    para a aplicação.
+    
+    $id = Request::input('id',0);
+    Isso aplicamos na controller, no método que estamos
+    redirecionando, dependendo da rota e tudo mais.
+    
+    6.4) Conhecendo um pocuo mais da Request:
+    O request para recuperar o parâmetro da url
+    é bem fácil, basta usar o 
+    $atribuir = Request::input('parametro');
+    Porém o Request nos oferece diversos outros 
+    métodos;
+    
+        if(Request::has('id')){
+        //faz algo
+        }
+        
+    $input = Request::all(); -> Retorna todos os parâmetros
+    $input = Request::only('nome','id')-> retorna apenas os parâmetros nome e ID 
+    $inp = Request::except('id') -> Retorna todos elementos exceto o ID;
+    
+    Existe os métodos para trabalhar com a URL:
+    $url = Request::url();-> URL inteira;
+    $uri = Request::path(); -> 'produtos/mostra';
+    
+ 6.5) URLs Mais semânticas:
+    Ao invés de termos uma URL "/produtos/mostrar:id=2"
+    podemos trabalhar com a url "/produtos/mostrar/2" 
+    Para isto, teremos que primeiro alterar o redirecionamento
+    para que ao clicar em um botão, fique com essa estrutura
+    "/produtos/mostrar/2". O segundo passo, é, em nosso arquivo
+    de rotas, alterar, pois agora irá receber um parâmetro.
+    A rota deve ficar da seguinte maneira 
+    "produtos/mostra/{id}". E por último devemos alterar 
+    o nosso controlador, ele não recebe mais por input, e 
+    sim pela rota, devemos alterar para 
+    $id = Request::route('id');
+    Para recuperar este valor usamos o route ao invés de 
+    input, pois input só será utilizado quando formos 
+    trabalhar com parâmetros;
+    
+    
+6.7)    Alguns cuidados necessários:
+    
+    Podemos definir também nas rotas, explicar como 
+    cada um funciona, para evitar problemas nas rotas, uma
+    redirecionar para outra e vice-versa. Sendo assim, temos
+    que refinar o máximo possível nossas rotas para que 
+    funcione corretamente. 
+    Por exemplo, no de mostrar o produto, tem que ser um ID,
+    o ID do produto necessariamente.
+    Para ensinar os rotas, como se portar, alteramos
+    as rotas para:
+
+    Route::get('/produtos/mostra/{id}', 
+          'ProdutosController@mostra')
+          ->where('id','[0-9]+');
+    
+    
+Capítulo 07 Views mais flexíveis e poderosas:
+    Laravel nos ajuda nas construções das views. 
+    Para que não haja repetição de códigos HTML;
+    
+    7.1) Blade
+    
+    Podemos usar o template engine do laravel, um 
+    dos recursos é nos deixar extender um html
+    para diversos arquivos;
+    
+7.2) Variáveis com Blade:
+- O blade facilita nosso processamento com as variáveis
+- Podemos insrir php dentro de nosso blade para trabalhar
+com as variáveis, porém o blade nos ajuda com este ponto
+- O blade nos permite trabalhar da seguinte maneira
+
+<b>Valor:</b> R$ <? = $p->valor ?>
+O código acima, pode ser reescrito da seguinte maneira
+<b>Valor:</b> R$ {{ $p->valor }}>
+- Tudo que for php no blade, podemos usar como "{{}}"
+ao invés de fazer <?= algo ?> 
+
+7.3) Loopings e mais loopings:
+    Tudo que for php, pode ser trocado pelos recursos que
+    o blade fornece.
+    
+    @foreach (condicoes)
+    
+    @endforeach
+    
+    - Todos os laços podem ser substituídos, por uma
+    sintaxe fornecida pelo blade;
+7.4) Adicionando condições na View:
+    É possível, dentro do blade, criarmos condições 
+para exibir uma classe CSS por exemplo.
+
+Capítulo 08 Request e métodos HTTP
+
+- Quando trabalhamos com os inputs, o laravel,
+irá recuperar os dados enviados por formulário, por 
+meio da propriedade "name" dos inputs
+
+-    $qtde = Request::input('estoqueProduto');
+- O exemplo acima é uma maneira de recuperarmos os 
+dados via input;
+
+- A melhor maneira de inserirmos dados, via Controller,
+no database , é o Query Builder 
+
+    DB::table(’produtos’)->insert(
+        [’nome’ => $nome,
+        ’valor’ => $valor,
+        ’descricao’ => $descricao,
+        ’quantidade’ => $quantidade
+        ]);
+    Com essa estrutura acima é inserido no Database,
+    ao invés de usarmos o DB::insert...
+    
+- Podemos enviar outro método, por padrão é o GET, se 
+nosso form utilizar o método POST, devemos alterar na 
+rota 
+Route::get/post(..) você altera o método nas rotas, e 
+chama os controllers, normalmente. 
+
+- No laravel, quando trabalhamos com o método POST, em
+um form, devemos fazer umas alterações, a primeira dela 
+é inserir 
+<input type="hidden"
+name="_token" value="{{{ csrf_token() }}}" />
+
+Que é um validador de token do laravel, com esta 
+validação, conseguimos mexer com o método POST;
+
+Capítulo 09 "Diferentes tipos de resposta":
+
+Capítulo 10 "Eloquent ORM" 
+
+- Os métodos do controller estão complexos, porém no
+Laravel, há um framework para nos ajudar com a manipulação
+do SQL.
+
+10.1) Solução ORM: 
+    
+    - O framework Eloquent ORM, nos ajuda com essa parte
+    do SQL, para que não ficarmos presos ao SQL, 
+    podendo gerar diversas falhas em nossa aplicação;
+    
+     
+10.2) Tudo mais simples com o Eloquent
+    
+    - Utilizamos a classe modelo que foi criada no começo
+    da aplicação
+    
+    - Primeiro passo é, em nosso controller, importar
+    a model "use ....." -> Não precisa por extesão do 
+    arquivo;
+    
+    - O caminho do arquivo ,usamos o "estoque" pois o 
+    definimos como nome da aplicação, que criamos
+    com o "laravel new Estoque";
+    
+10.3) Buscando pelo ID com o Eloquent:
+    
+    -
+    
+    git config --global user.email "your_email@example.com"
+git remote add origin git@github.com:joaoCrulhas/Laravel-CasaDoCodigo.git
