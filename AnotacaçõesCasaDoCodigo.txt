@@ -327,8 +327,157 @@ do SQL.
     com o "laravel new Estoque";
     
 10.3) Buscando pelo ID com o Eloquent:
+
+public function mostra($id){
+      $produto = Produto::find($id);
+      if(empty($produto)){
+          return "Este produto não existe";
+      }
+    return view('produto.detalhes')->with('p',$produto);
+}
+
+-> Uma maneira, de fazermos o select é utilizarmos o find
+da nossa model, um exemplo é acima, $id, que é passado
+por parâmetro, $produto = Produto::find($id); o ID 
+está sendo recuperado pela URL, se acessarmos nossas 
+rotas, {id}, quando passamos na nossa rota, podemos
+recuperar em nossa controller o id;
+
+10.4) Migrando a inserção de produtos:
+    - Assim como o Select, podemos alterar o método 
+    "criar" que insere um novo produto em nossa Base de 
+    dados;
     
-    -
+    - É possível deixar com uma cara mais legível, 
+    onde qualquer um que ler, poderá entender o que está
+    sendo feito
     
-    git config --global user.email "your_email@example.com"
-git remote add origin git@github.com:joaoCrulhas/Laravel-CasaDoCodigo.git
+    $produto = new Produto();
+    $produto->nome = Request::input(’nome’);    
+    $produto->valor = Request::input(’valor’);
+    $produto->descricao = Request::input(’descricao’);
+    $produto->quantidade = Request::input(’quantidade’);
+    $produto->save();
+
+10.5) Função Remover produtos: 
+    
+    - Assim como podemos inserir novos valores,
+    podemos remover valores do banco da dados.
+    
+    - O primeiro passo é criarmos uma rota para a exclusão
+    dos produtos e no controlador, qual será a action
+    que será utilizada;
+    
+    - Utilizando o Eloquent, continua fácil, para isso
+    basta utilizarmos os métodos 
+    Produto::find($id) -> Busca o id passado por parâmetro
+    e o $produto->delete();
+    Que o mesmo será excluído da loja
+    
+11) Validando os dados de entrada:
+    - É possível validar os dados que o usuário
+    insere, além de algumas características de html
+    podemos refinar melhor ainda essas validações;
+    
+    - Podemos fazer validações com o IF, porém em 
+    grandes formulários isso facaria custoso;
+    
+    - O laravel nos ajuda com esta parte de validação
+    por meio do Validator::make. 
+    $validator = Validator::make(
+        [’nome’ => Request::input(’nome’)],
+        [’nome’ => ’required|min:5’]
+    );
+    
+    No validator, no método make(),passamos dois vetores
+    o primeiro "[’nome’ => Request::input(’nome’)]"
+    indica qual o Request que iremos trabalhar,
+    e no segundo vetor "[’nome’ => ’required|min:5’]"
+    temos a validação;
+    
+    - Agora a variável validator, irá armazenar o resultado
+    desta variável, e para verificar se teve erros ou não,
+    podemos utilizar "$validator->fails()" se alguma validação
+    falhar podemos realizar algum tratamento.
+    
+    - Ainda podemos reportar ao usuário, qual o erro cometido
+    $messages = $validator->messages(); passando para uma 
+    view, para que o usuário tenha conhecimento do erro 
+    que cometeu;
+    
+    - Porém continua sendo um problema quando tivermos diversos 
+    campos;
+    
+11.2) Utilizando o Form Requests:
+- É uma classe criada dentro do app/http/request
+
+- O artisan nos ajuda a criar esse form request, não
+havendo a necessidade de criar tudo na mão;
+
+- php artisan make:request ProdutosRequest comando que gera
+este form request;
+    
+- A classe possuí dois métodos authorize, 
+que é utilizado para informar se o usuário pode fazer
+aquela requisição, para não ter que fazer essas 
+validações, e permitir para qualquer usuário 
+alterar os dados, utilizamos o "return true".
+
+- O segundo método são as regras (rules)
+que você irá definí-las conforme a regra abaixo:
+return[
+        ’nome’ => ’required|max:100’,
+        ’descricao’ => ’required|max:255’,
+        ’valor’ => ’required|numeric’
+    ];
+
+definido as regras, com os nomes das colunas no DB. 
+E definindo as regras;
+
+11.3) ADD FORM REQUEST AO ADICIONAR:
+- Para incorporamos o ProdutosRequest, que foi
+criado.
+- Para isso fazemos ProdutosRequest $request dentro
+do método que queremos utilizá-lo (ProdutosRequest $request)
+Desta maneira o ProdutosRequest será incorporado ao 
+método do controlador que adicionarmos.
+
+public function criar(ProdutosRequest $request){}
+No controlador também devemos adicionar 
+"use estoque\Http\Requests\ProdutosRequest;"
+Para utilizar o Request que definimos.
+
+- E por fim, para pegarmos os parâmetros, 
+Produto::create($request->all());
+fazendo esta sintaxe irá criar o create do produto.
+- Se algum dado não fizer jus a regra, será redirecionado
+para a própria página.
+
+11.4) Exibindo Errors de validação:
+- Quando há algum erro, utilizando o form request
+podemos adicionar essas mensagens de erros para que 
+o usuário saiba qual informação inseriu errado.
+
+- Quando trabalhamos com a validação, utilizando o form
+request, teremos a situação de que, a variável $errors 
+estará disponível na view que estamos renderizando no controller
+Esta variável, possuí diversos métodos, e o mais famoso deles
+é o $errors->all() -> Que irá retornar todos os dados;
+- Podemos tratar essa variável fazendo um foreach 
+por exemplo.
+- Para exibirmos as mensagens de erros, apenas 
+quando ocorrer mesmo um erro, podemos utilizar um 
+IF na view, encapsulando todas essa div que exibe 
+mensagem.
+E com apenas um (count($errors) > 0 ) 
+- Verificar melhor essa 
+
+
+
+
+Capítulo 12 - Autenticação e Segurança:
+- Para trabalhar a questão de autenticação e permissão
+de acesso, podemos usar middlewares e Auth.
+- 
+
+http://lepidllama.net/blog/how-to-push-an-existing-cloud9-project-to-github/

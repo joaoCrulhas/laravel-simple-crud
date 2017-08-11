@@ -2,8 +2,12 @@
 
 @section('content')
 
+@foreach($errors->all() as $error)
+{{ $error }}
+@endforeach
+
 <h1> Adicionar produtos </h1>    
-<form action="{{action('ProdutosController@criar')}}" method="POST" class="ls-form row">
+<form action="{{ action('ProdutosController@criar') }}" method="POST" class="ls-form row">
     <input type="hidden" name="_token" value ="{{{ csrf_token() }}}"/>
 
   <fieldset>
