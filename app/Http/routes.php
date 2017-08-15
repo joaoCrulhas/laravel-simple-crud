@@ -1,6 +1,7 @@
 <?php
 
-Route::get('/','ProdutosController@index');
+Route::get('/index','ProdutosController@index');
+Route::get('/','ProdutosController@login');
 
 
 Route::get('/produtos', 'ProdutosController@lista');
@@ -31,3 +32,7 @@ Route::controllers([
 'auth' => 'Auth\AuthController',
 'password' => 'Auth\PasswordController',
 ]);
+
+Route::auth();
+
+Route::get('/home', 'HomeController@index');

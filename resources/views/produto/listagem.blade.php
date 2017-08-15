@@ -25,6 +25,4 @@
     @endif
     </table>
      <a href="{{action('ProdutosController@index')}}"> Voltar ao início </a>
-
-
 @stop

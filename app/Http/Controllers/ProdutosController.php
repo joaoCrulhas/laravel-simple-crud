@@ -50,7 +50,9 @@ public function lista(){
        $produtos = Produto::all();
        return view('produto.listagem')->with('produtos', $produtos);
 }
-
+public function login(){
+    return view('auth.login');
+}
 public function atualizar($id){
       $produto = Produto::find($id);
       return view('produto.atualizar')
