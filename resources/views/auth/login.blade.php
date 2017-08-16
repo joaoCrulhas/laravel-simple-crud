@@ -63,4 +63,15 @@
         </div>
     </div>
 </div>
+    <h1> Listagem de Produtos </h1>
+    <table class = "ls-table ls-table-striped">
+        @foreach ($produtos as $p)
+        <tr>
+            <td>{{$p->nome}} </td>
+            <td>{{$p->valor}} </td>
+            <td>{{$p->descricao}}</td>
+            <td>{{$p->quantidade}}</td>
+        </tr>
+        @endforeach
+        </table>
 @endsection

@@ -51,7 +51,10 @@ public function lista(){
        return view('produto.listagem')->with('produtos', $produtos);
 }
 public function login(){
-    return view('auth.login');
+    //Enviar para a view os dados do produto para já exibir na primeira tela;;
+    $produtos = Produto::all();
+    // return view('auth.login');
+    return view('auth.login')->with('produtos',$produtos);
 }
 public function atualizar($id){
       $produto = Produto::find($id);
